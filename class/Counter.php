@@ -2,31 +2,36 @@
 
 class Counter
 {
-    public $fileName = 'viewsCounter';
+    protected $fileName = 'viewsCounter';
+    protected $nbrViews = 0;
+    protected $incrementCounter = true;
 
-    public function addViews(): void
+
+    public function __construct(bool $incrementCounter = true)
     {
-        $dataFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $this->fileName;
-        $this->incrCounter($dataFile);
+        if(!$incrementCounter) {
+            $this->incrementCounter = $incrementCounter;
+        }
+        $dataFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $this->fileName . '.txt';
+        $this->setCounter($dataFile);
+
     }
 
-    public function incrCounter(string $dataFile): void
+    private function setCounter(string $dataFile): void
     {
-        $nbrViews = 1;
         if(file_exists($dataFile)) {
-            $nbrViews = (int)file_get_contents($dataFile);
-            $nbrViews++;
+            $this->nbrViews = (int)file_get_contents($dataFile);
         }
-        file_put_contents($dataFile, $nbrViews);
+        if($this->incrementCounter) {
+            $this->nbrViews += 1;
+            file_put_contents($dataFile, $this->nbrViews);
+        }
+
     }
 
-    public function showViews(): string
+    public function getViews(): string
     {
-        $dataFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $this->fileName;
-        if(file_exists($dataFile)) {
-            return file_get_contents($dataFile);
-        }
-        throw new Error('This file doesn\'t exists.');
+        return $this->nbrViews;
     }
 
 }

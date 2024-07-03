@@ -1,11 +1,28 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-include 'header.php';
+
 require './class/Counter.php';
 require './class/ClickCounter.php';
 
-$counterViews = new Counter();
-$counterClicks = new ClickCounter();
+$setIncrementCounterViews = true;
+$setIncrementClickViews = false;
+
+if(isset($_POST['clickBtn'])) {
+    $setIncrementClickViews = true;
+    $setIncrementCounterViews = false;
+}
+
+$counterViews = new Counter($setIncrementCounterViews);
+$views = $counterViews->getViews();
+
+
+$counterClicks = new ClickCounter($setIncrementClickViews);
+$click = $counterClicks->getViews();
+
+
+include 'header.php';
 ?>
 
 <body>
@@ -15,26 +32,24 @@ $counterClicks = new ClickCounter();
     </div>
     <div class="container">
         <?php
-        $counterViews->addViews();
-$views = $counterViews->showViews();
+
 echo "{$views} user" . (($views > 1) ? 's' : '') . " saw this website.";
 ?>
     </div>
     <div class="container">
         <?php
 
-if(isset($_POST['clickBtn'])) {
-    $counterClicks->addViews();
-    header("Location: " . $_SERVER['PHP_SELF']); //avoid submit on refresh
-    exit();
-}
-$click = $counterClicks->showViews();
+
+
 ?>
         <form method="POST">
-            <button class="btn btn-primary" type="submit" name="clickBtn">Click ?</button>
+            <input class="btn btn-primary" type="submit" name="clickBtn" value="Click ?">
         </form>
-        <?= "You clicked {$click}" . (!$click) ? 0 : '' . "times"; ?>
+
+        <?= (($click) ? "You clicked {$click} times." : ""); ?>
+
     </div>
+
 
 
     <?php include 'footer.php'; ?>
