@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 include 'header.php';
 require './class/Counter.php';
 require './class/ClickCounter.php';
@@ -20,9 +21,19 @@ echo "{$views} user" . (($views > 1) ? 's' : '') . " saw this website.";
 ?>
     </div>
     <div class="container">
-        <form>
-            <button class="btn btn-primary" type="submit">Click ?</button>
+        <?php
+
+if(isset($_POST['clickBtn'])) {
+    $counterClicks->addViews();
+    header("Location: " . $_SERVER['PHP_SELF']); //avoid submit on refresh
+    exit();
+}
+$click = $counterClicks->showViews();
+?>
+        <form method="POST">
+            <button class="btn btn-primary" type="submit" name="clickBtn">Click ?</button>
         </form>
+        <?= "You clicked {$click}" . (!$click) ? 0 : '' . "times"; ?>
     </div>
 
 
